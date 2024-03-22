@@ -38,7 +38,7 @@ app.post('/api/notes', (req, res) => {
     noteData.push(newNote);
 
     fs.writeFile(path.join(__dirname, 'db/db.json'), JSON.stringify(noteData), (err) => {
-        if(err) {
+        if (err) {
             console.log('Error saving note');
         } else {
             res.json(newNote);
@@ -46,9 +46,23 @@ app.post('/api/notes', (req, res) => {
     });
 });
 
-app.delete('/notes/:id', (req, res) =>) {
-    
-}
+app.delete('/api/notes/:id', (req, res) => {
+    const noteId = req.params.id;
+    const index = noteData.findIndex(note => note.id === noteId);
+
+    if (index != -1) {
+        noteData.splice(index, 1);
+        fs.writeFile(path.join(__dirname, 'db/db.json'), JSON.stringify(noteData), (err) => {
+            if (err) {
+                console.log('Error saving note');
+            } else {
+                res.status(200).send('Note has been deleted.');
+            }
+        });
+    } else {
+        res.status(404).send('Error note not found');
+    }
+});
 
 // GET Route for homepage
 app.get('*', (req, res) =>
